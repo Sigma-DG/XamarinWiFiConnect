@@ -64,8 +64,8 @@ namespace XamarinWiFiConnect.ViewModels
 
                 try
                 {
-                    string ssID = "";
-                    string password = "";
+                    string ssID = "";//TODO: put existing WiFi ssID
+                    string password = "";//TODO: put existing WiFi password
                     wifiConnector.ConnectToWifi(ssID, password);
                     StatusMessage = $"WiFi is connected to {ssID} successfully";
                 }
