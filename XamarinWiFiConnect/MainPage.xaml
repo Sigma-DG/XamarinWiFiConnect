@@ -2,13 +2,23 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:XamarinWiFiConnect"
+             xmlns:vm="clr-namespace:XamarinWiFiConnect.ViewModels"
              x:Class="XamarinWiFiConnect.MainPage">
+    <ContentPage.BindingContext>
+        <vm:MainViewModel />
+    </ContentPage.BindingContext>
 
     <StackLayout>
-        <!-- Place new controls here -->
-        <Label Text="Welcome to Xamarin.Forms!" 
+        <Label Text="Welcome to XamarinWiFiConnect!" 
            HorizontalOptions="Center"
-           VerticalOptions="CenterAndExpand" />
+           VerticalOptions="Start" FontSize="Large" />
+        <Label Text="{Binding StatusMessage}"
+           HorizontalOptions="Center"
+           VerticalOptions="Start" FontSize="Small" />
+        <Label Text="{Binding ErrorMessage}"
+           HorizontalOptions="Center"
+           VerticalOptions="Start" TextColor="Red" FontSize="Micro" />
+        <Button Text="Start connection" Command="{Binding StartCommand}" />
     </StackLayout>
 
 </ContentPage>
