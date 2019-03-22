@@ -70,7 +70,7 @@ namespace XamarinWiFiConnect.Droid.PlatformServices
             {
                 throw new Exception("WifiConnector can not get the list of configured wifi networks", ex);
             }
-
+            
             try
             {
                 _wifiManager.Disconnect();

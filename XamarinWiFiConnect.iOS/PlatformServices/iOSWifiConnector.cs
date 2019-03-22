@@ -35,6 +35,7 @@ namespace XamarinWiFiConnect.iOS.PlatformServices
             var formattedPassword = $"\"{password}\"";
 
             NEHotspotConfiguration wifiConfig = new NEHotspotConfiguration(formattedSsid, formattedPassword, false);
+            wifiConfig.JoinOnce = false;
 
             try
             {
