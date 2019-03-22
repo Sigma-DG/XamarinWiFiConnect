@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Foundation;
 using NetworkExtension;
-using UIKit;
 using Xamarin.Forms;
 using XamarinWiFiConnect.Common.Services;
 using XamarinWiFiConnect.iOS.PlatformServices;
@@ -31,21 +25,25 @@ namespace XamarinWiFiConnect.iOS.PlatformServices
 
         public void ConnectToWifi(string ssid, string password)
         {
-            var formattedSsid = $"\"{ssid}\"";
-            var formattedPassword = $"\"{password}\"";
-
-            NEHotspotConfiguration wifiConfig = new NEHotspotConfiguration(formattedSsid, formattedPassword, false);
-            wifiConfig.JoinOnce = false;
+            NEHotspotConfiguration wifiConfig = new NEHotspotConfiguration(ssid, password, false);
+            wifiConfig.JoinOnce = true;
 
             try
             {
+                _wifiManager.RemoveConfiguration(ssid);
                 _wifiManager.ApplyConfiguration(wifiConfig, (error) =>
                 {
-                    if (error != null)
+                    if (error != null)//if you get internal error you have to check and manually add your Entitlements.plist instead of using automatic provisioning profile.
                     {
-                        var message = $"Error while connecting to WiFi network {formattedSsid}: {error}";
-                        Console.WriteLine(message);
-                        //throw new Exception(message);
+                        if (error.ToString().Contains("internal"))
+                        {
+                            Console.WriteLine("Please check and manually add your Entitlements.plist instead of using automatic provisioning profile.");
+                        }
+                        else
+                        {
+                            var message = $"Error while connecting to WiFi network {ssid}: {error}";
+                            Console.WriteLine(message);
+                        }
                     }
                 });
             }
