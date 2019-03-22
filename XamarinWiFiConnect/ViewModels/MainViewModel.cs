@@ -52,6 +52,11 @@ namespace XamarinWiFiConnect.ViewModels
                 try
                 {
                     wifiConnector = DependencyService.Get<IWifiConnector>();
+                    if (wifiConnector == null)
+                    {
+                        ErrorMessage = "Platform specific WiFi service is not available.";
+                        return;
+                    }
                     StatusMessage = "WiFi service has been retrieved successfully";
                 }
                 catch (Exception ex)
