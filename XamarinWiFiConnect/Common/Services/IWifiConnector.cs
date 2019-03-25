@@ -4,7 +4,7 @@ using System.Text;
 
 namespace XamarinWiFiConnect.Common.Services
 {
-    public interface IWifiConnector
+    public interface IWifiConnector : ILogger
     {
         /// <summary>
         /// Connects the device to the specified WiFi network. If it is required it will add the network configurations first and then sends connection request to the users.

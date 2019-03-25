@@ -9,5 +9,6 @@
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
 	<uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
+	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 	<application android:label="Xamarin WiFi Connect"></application>
 </manifest>

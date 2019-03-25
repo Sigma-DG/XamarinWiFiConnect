@@ -29,7 +29,10 @@ namespace XamarinWiFiConnect.UWP.PlatformServices
         static ConnectorStatuses status;
         int tryCount = 0;
 
-        private async Task InitializeFirstAdapter()
+        public event StringHandler OnLog;
+        public event ExceptionHandler OnError;
+
+        private async Task InitializeAdapter()
         {
             lock (initializeLocker)
             {
@@ -42,7 +45,7 @@ namespace XamarinWiFiConnect.UWP.PlatformServices
                 {
                     status = ConnectorStatuses.NoStatus;
                 }
-                throw new Exception("WiFiAccessStatus not allowed");
+                OnError?.Invoke(new Exception("WiFiAccessStatus not allowed"));
             }
             else
             {
@@ -63,14 +66,14 @@ namespace XamarinWiFiConnect.UWP.PlatformServices
                     {
                         status = ConnectorStatuses.NoStatus;
                     }
-                    throw new Exception("WiFi Adapter not found.");
+                    OnError?.Invoke(new Exception("WiFi Adapter not found."));
                 }
             }
         }
 
         public UWPWifiConnector()
         {
-            InitializeFirstAdapter();
+            InitializeAdapter().Wait();
         }
 
         public void ConnectToWifi(string ssid, string password)
@@ -80,7 +83,8 @@ namespace XamarinWiFiConnect.UWP.PlatformServices
                 switch (status)
                 {
                     case ConnectorStatuses.NoStatus:
-                        throw new Exception("Wifi addapter has failed to initialize. Please check the application access and restart the application..");
+                        OnError?.Invoke(new Exception("Wifi addapter has failed to initialize. Please check the application access and restart the application.."));
+                        return;
                     case ConnectorStatuses.IsInitializing:
                         if(tryCount<2)
                         {
@@ -92,7 +96,8 @@ namespace XamarinWiFiConnect.UWP.PlatformServices
                             return;
                         }
                         tryCount = 0;
-                        throw new Exception("Wifi addapter is still initializing. Please check the application access and try again..");
+                        OnError?.Invoke(new Exception("Wifi addapter is still initializing. Please check the application access and try again.."));
+                        return;
                     case ConnectorStatuses.Initialized:
                         tryCount = 0;
                         status = ConnectorStatuses.IsConnecting;
@@ -100,6 +105,7 @@ namespace XamarinWiFiConnect.UWP.PlatformServices
                     case ConnectorStatuses.IsConnecting:
                         return;
                     case ConnectorStatuses.Connected:
+                        OnLog?.Invoke("WiFi network is already connected");
                         return;
                     default:
                         break;
@@ -126,7 +132,8 @@ namespace XamarinWiFiConnect.UWP.PlatformServices
                     {
                         status = ConnectorStatuses.Initialized;
                     }
-                    throw new Exception("The specified wifi network ");
+                    OnError?.Invoke(new Exception("The specified wifi network does not exist"));
+                    return;
                 }
 
                 WiFiReconnectionKind reconnectionKind = WiFiReconnectionKind.Manual;
@@ -148,6 +155,7 @@ namespace XamarinWiFiConnect.UWP.PlatformServices
                         {
                             status = ConnectorStatuses.Connected;
                         }
+                        OnLog?.Invoke("WiFi network has been connected");
                     }
                     catch (Exception ex)
                     {
@@ -155,7 +163,7 @@ namespace XamarinWiFiConnect.UWP.PlatformServices
                         {
                             status = ConnectorStatuses.Initialized;
                         }
-                        throw new Exception("Activating the connection to the configured wifi network failed", ex);
+                        OnError?.Invoke(new Exception("Activating the connection to the configured wifi network failed", ex));
                     }
                 }
             });

@@ -4,10 +4,20 @@ using System.Text;
 
 namespace XamarinWiFiConnect.Common.Services
 {
-    public interface IHotspotCreator
+    public delegate void HotspotCreationHandler(string ssid, string password);
+
+    public interface IHotspotCreator : ILogger
     {
+        event HotspotCreationHandler OnHotspotCreated;
+
         bool IsHotspotEnabled { get; }
 
-        bool CreateHotspot();
+        string ConfiguredSSID { get; }
+
+        string ConfiguredPassword { get; }
+
+        void CreateAutoHotspot();
+
+        void CreateHotspot(string ssid, string password);
     }
 }
