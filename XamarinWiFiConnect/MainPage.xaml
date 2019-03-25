@@ -18,7 +18,8 @@
         <Label Text="{Binding ErrorMessage}"
            HorizontalOptions="Center"
            VerticalOptions="Start" TextColor="Red" FontSize="Micro" />
-        <Button Text="Start connection" Command="{Binding StartCommand}" />
+        <Button Text="Connect to Hotspot" Command="{Binding ConnectCommand}" />
+        <Button Text="Create Hotspot" Command="{Binding CreateCommand}" />
     </StackLayout>
 
 </ContentPage>

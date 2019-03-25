@@ -22,6 +22,8 @@ namespace XamarinWiFiConnect.ViewModels
         }
         #endregion
 
+        private bool isHotspotProvider = false;
+
         private string _statusMessage = string.Empty;
         public string StatusMessage
         {
@@ -42,11 +44,13 @@ namespace XamarinWiFiConnect.ViewModels
             }
         }
 
-        public ICommand StartCommand { get; private set; }
+        public ICommand ConnectCommand { get; private set; }
+
+        public ICommand CreateCommand { get; private set; }
 
         public MainViewModel()
         {
-            StartCommand = new Command(() => {
+            ConnectCommand = new Command(() => {
                 IWifiConnector wifiConnector = null;
 
                 try
@@ -69,8 +73,8 @@ namespace XamarinWiFiConnect.ViewModels
 
                 try
                 {
-                    string ssID = "";//TODO: put existing WiFi ssID
-                    string password = "";//TODO: put existing WiFi password
+                    string ssID = "MyTestHotSpot";//TODO: put existing WiFi ssID
+                    string password = "654987123";//TODO: put existing WiFi password
                     wifiConnector.ConnectToWifi(ssID, password);
                     StatusMessage = $"WiFi is connected to {ssID} successfully";
                 }
@@ -80,7 +84,51 @@ namespace XamarinWiFiConnect.ViewModels
                     if (ex.InnerException != null)
                         ErrorMessage = $"{ErrorMessage}\n{ex.InnerException.Message}\n\nStackTrace: {ex.InnerException.StackTrace}";
                 }
-            });
+            }, () => !isHotspotProvider);
+
+            CreateCommand = new Command(() => {
+                IHotspotCreator hotspotCreator = null;
+
+                try
+                {
+                    hotspotCreator = DependencyService.Get<IHotspotCreator>();
+                    if (hotspotCreator == null)
+                    {
+                        ErrorMessage = "Platform specific HotSpot service is not available.";
+                        return;
+                    }
+                    StatusMessage = "HotSpot service has been retrieved successfully";
+                }
+                catch (Exception ex)
+                {
+                    ErrorMessage = ex.Message;
+                    if (ex.InnerException != null)
+                        ErrorMessage = $"{ErrorMessage}\n{ex.InnerException.Message}\n\nStackTrace: {ex.InnerException.StackTrace}";
+                    return;
+                }
+
+                try
+                {
+                    if (!hotspotCreator.IsHotspotEnabled)
+                    {
+                        hotspotCreator.CreateHotspot();
+                        isHotspotProvider = true;
+                        ((Command)ConnectCommand).ChangeCanExecute();
+
+                        StatusMessage = "HotSpot service has been successfully enabled";
+                    }
+                    else StatusMessage = "HotSpot service is already enabled";
+                }
+                catch (Exception ex)
+                {
+                    ErrorMessage = ex.Message;
+                    if (ex.InnerException != null)
+                        ErrorMessage = $"{ErrorMessage}\n{ex.InnerException.Message}\n\nStackTrace: {ex.InnerException.StackTrace}";
+                    return;
+                }
+
+
+            }, () => Device.RuntimePlatform.Equals(Device.Android));
         }
     }
 }
