@@ -8,6 +8,8 @@ namespace XamarinWiFiConnect.Common.Services
     {
         bool IsHotspotEnabled { get; }
 
-        bool CreateHotspot();
+        bool CreateHotspot(string ssid, string preSharedPassword);
+
+        bool StopHotspot();
     }
 }

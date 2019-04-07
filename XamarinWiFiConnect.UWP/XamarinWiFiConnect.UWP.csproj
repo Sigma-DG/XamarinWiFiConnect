@@ -149,7 +149,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\XamarinWiFiConnect\XamarinWiFiConnect.csproj">
-      <Project>{BC2F0245-EAEA-4B79-9BC7-6052E4F5F030}</Project>
+      <Project>{bb3ecace-aec2-406d-b035-f648e773154a}</Project>
       <Name>XamarinWiFiConnect</Name>
     </ProjectReference>
   </ItemGroup>
