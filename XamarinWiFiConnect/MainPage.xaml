@@ -20,6 +20,7 @@
            VerticalOptions="Start" TextColor="Red" FontSize="Micro" />
         <Button Text="Connect to Hotspot" Command="{Binding ConnectCommand}" />
         <Button Text="Create Hotspot" Command="{Binding CreateCommand}" />
+        <Button Text="Stop Hotspot" Command="{Binding StopCommand}" />
     </StackLayout>
 
 </ContentPage>

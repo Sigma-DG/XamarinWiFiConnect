@@ -8,7 +8,7 @@ namespace XamarinWiFiConnect.Common.Services
 
     public interface IHotspotCreator : ILogger
     {
-        event HotspotCreationHandler OnHotspotCreated;
+        //event HotspotCreationHandler OnHotspotCreated;
 
         bool IsHotspotEnabled { get; }
 
@@ -16,8 +16,10 @@ namespace XamarinWiFiConnect.Common.Services
 
         string ConfiguredPassword { get; }
 
-        void CreateAutoHotspot();
+        //void CreateAutoHotspot();
 
-        void CreateHotspot(string ssid, string password);
+        void CreateHotspot(string ssid, string preSharedKey);
+
+        void StopHotspot();
     }
 }

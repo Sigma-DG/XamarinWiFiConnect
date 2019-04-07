@@ -24,9 +24,11 @@ namespace XamarinWiFiConnect.ViewModels
         #endregion
 
         private bool _isHotspotProvider = false;
-        public bool IsHotspotProvider {
+        public bool IsHotspotProvider
+        {
             get { return _isHotspotProvider; }
-            set {
+            set
+            {
                 _isHotspotProvider = value;
                 NotifyPropertyChanged("IsHotspotProvider");
                 Device.BeginInvokeOnMainThread(() =>
@@ -61,6 +63,8 @@ namespace XamarinWiFiConnect.ViewModels
         public ICommand ConnectCommand { get; private set; }
 
         public ICommand CreateCommand { get; private set; }
+
+        public ICommand StopCommand { get; private set; }
 
         public MainViewModel()
         {
@@ -148,11 +152,57 @@ namespace XamarinWiFiConnect.ViewModels
                     {
                         if (!hotspotCreator.IsHotspotEnabled)
                         {
-                            hotspotCreator.CreateAutoHotspot();
-                            //hotspotCreator.CreateHotspot("MyTestHotSpot", "654987123");
+                            //hotspotCreator.CreateAutoHotspot();
+                            hotspotCreator.CreateHotspot("MyTestHotSpot", "654987123");
                             IsHotspotProvider = true;
                         }
                         else StatusMessage = "HotSpot service is already enabled";
+                    }
+                    catch (Exception ex)
+                    {
+                        ErrorMessage = ex.Message;
+                        if (ex.InnerException != null)
+                            ErrorMessage = $"{ErrorMessage}\n{ex.InnerException.Message}\n\nStackTrace: {ex.InnerException.StackTrace}";
+                        return;
+                    }
+                });
+            }, () => Device.RuntimePlatform.Equals(Device.Android));
+
+            StopCommand = new Command(() =>
+            {
+                Task.Run(() =>
+                {
+                    IHotspotCreator hotspotCreator = null;
+
+                    try
+                    {
+                        hotspotCreator = DependencyService.Get<IHotspotCreator>();
+                        if (hotspotCreator == null)
+                        {
+                            ErrorMessage = "Platform specific HotSpot service is not available.";
+                            return;
+                        }
+                        StatusMessage = "HotSpot service has been retrieved successfully";
+                    }
+                    catch (Exception ex)
+                    {
+                        ErrorMessage = ex.Message;
+                        if (ex.InnerException != null)
+                            ErrorMessage = $"{ErrorMessage}\n{ex.InnerException.Message}\n\nStackTrace: {ex.InnerException.StackTrace}";
+                        return;
+                    }
+
+                    try
+                    {
+                        if (hotspotCreator.IsHotspotEnabled)
+                        {
+                            hotspotCreator.StopHotspot();
+                            IsHotspotProvider = false;
+                            ((Command)ConnectCommand).ChangeCanExecute();
+
+                            StatusMessage = "HotSpot service has been successfully stopped";
+                        }
+                        else StatusMessage = "HotSpot service is already off";
                     }
                     catch (Exception ex)
                     {

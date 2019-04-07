@@ -104,9 +104,9 @@ namespace XamarinWiFiConnect.UWP.PlatformServices
                         break;
                     case ConnectorStatuses.IsConnecting:
                         return;
-                    case ConnectorStatuses.Connected:
-                        OnLog?.Invoke("WiFi network is already connected");
-                        return;
+                    //case ConnectorStatuses.Connected:
+                    //    OnLog?.Invoke("WiFi network is already connected");
+                    //    return;
                     default:
                         break;
                 }
