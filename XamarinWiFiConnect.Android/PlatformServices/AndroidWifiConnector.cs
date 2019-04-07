@@ -22,6 +22,9 @@ namespace XamarinWiFiConnect.Droid.PlatformServices
     {
         WifiManager _wifiManager;
 
+        public event StringHandler OnLog;
+        public event ExceptionHandler OnError;
+
         public AndroidWifiConnector()
         {
             try
@@ -31,7 +34,7 @@ namespace XamarinWiFiConnect.Droid.PlatformServices
             }
             catch (Exception ex)
             {
-                throw new Exception("WifiConnector can not access the device WifiManager", ex);
+                OnError?.Invoke(new Exception("WifiConnector can not access the device WifiManager", ex));
             }
         }
 
@@ -52,10 +55,10 @@ namespace XamarinWiFiConnect.Droid.PlatformServices
             }
             catch (Exception ex)
             {
-                throw new Exception("WifiConnector can not add the new wifi network configuration", ex);
+                OnError?.Invoke(new Exception("WifiConnector can not add the new wifi network configuration", ex));
             }
 
-            WifiConfiguration network;
+            WifiConfiguration network = null;
             try
             {
                 network = _wifiManager.ConfiguredNetworks
@@ -63,22 +66,27 @@ namespace XamarinWiFiConnect.Droid.PlatformServices
 
                 if (network == null)
                 {
-                    throw new Exception("WifiConnector can not connect to the specified wifi network");
+                    OnError?.Invoke(new Exception("WifiConnector can not connect to the specified wifi network"));
+                    return;
                 }
             }
             catch (Exception ex)
             {
-                throw new Exception("WifiConnector can not get the list of configured wifi networks", ex);
+                OnError?.Invoke(new Exception("WifiConnector can not get the list of configured wifi networks", ex));
+                return;
             }
             
             try
             {
                 _wifiManager.Disconnect();
                 var enableNetwork = _wifiManager.EnableNetwork(network.NetworkId, true);
+                if (enableNetwork && _wifiManager.ConnectionInfo != null && _wifiManager.ConnectionInfo.SSID.Equals(formattedSsid))
+                    OnLog?.Invoke("WiFi network has been connected");
+                else OnError?.Invoke(new Exception("Te specified wifi network does not exist"));
             }
             catch (Exception ex)
             {
-                throw new Exception("Activating the connection to the configured wifi network failed", ex);
+                OnError?.Invoke(new Exception("Activating the connection to the configured wifi network failed", ex));
             }
         }
     }

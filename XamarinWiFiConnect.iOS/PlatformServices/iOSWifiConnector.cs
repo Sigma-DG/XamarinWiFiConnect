@@ -11,6 +11,9 @@ namespace XamarinWiFiConnect.iOS.PlatformServices
     {
         NEHotspotConfigurationManager _wifiManager;
 
+        public event StringHandler OnLog;
+        public event ExceptionHandler OnError;
+
         public iOSWifiConnector()
         {
             try
@@ -19,7 +22,7 @@ namespace XamarinWiFiConnect.iOS.PlatformServices
             }
             catch (Exception ex)
             {
-                throw new Exception("WifiConnector can not access the device WifiManager", ex);
+                OnError?.Invoke(new Exception("WifiConnector can not access the device WifiManager", ex));
             }
         }
 
@@ -30,6 +33,11 @@ namespace XamarinWiFiConnect.iOS.PlatformServices
 
             try
             {
+                if(_wifiManager == null)
+                {
+                    OnError?.Invoke(new Exception("WifiConnector can not access the device WifiManager"));
+                    return;
+                }
                 _wifiManager.RemoveConfiguration(ssid);
                 _wifiManager.ApplyConfiguration(wifiConfig, (error) =>
                 {
@@ -37,19 +45,23 @@ namespace XamarinWiFiConnect.iOS.PlatformServices
                     {
                         if (error.ToString().Contains("internal"))
                         {
-                            Console.WriteLine("Please check and manually add your Entitlements.plist instead of using automatic provisioning profile.");
+                            var message = "Please check and manually add your Entitlements.plist instead of using automatic provisioning profile.";
+                            Console.WriteLine(message);
+                            OnError?.Invoke(new Exception(message));
                         }
                         else
                         {
                             var message = $"Error while connecting to WiFi network {ssid}: {error}";
+                            OnError?.Invoke(new Exception(message));
                             Console.WriteLine(message);
                         }
                     }
+                    else OnLog?.Invoke("WiFi network has been connected");
                 });
             }
             catch (Exception ex)
             {
-                throw new Exception("WifiConnector can not add the new wifi network configuration", ex);
+                OnError?.Invoke(new Exception("WifiConnector can not add the new wifi network configuration", ex));
             }
         }
     }
