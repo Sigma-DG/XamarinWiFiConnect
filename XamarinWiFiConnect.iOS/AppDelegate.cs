@@ -22,6 +22,7 @@ namespace XamarinWiFiConnect.iOS
         //
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
+            //iOSPlugin.WifiConnectorInitiator.Initiate();
             global::Xamarin.Forms.Forms.Init();
             LoadApplication(new App());
 

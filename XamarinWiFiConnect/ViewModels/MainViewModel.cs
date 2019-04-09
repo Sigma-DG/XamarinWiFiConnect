@@ -76,7 +76,7 @@ namespace XamarinWiFiConnect.ViewModels
 
                     try
                     {
-                        wifiConnector = DependencyService.Get<IWifiConnector>();
+                        wifiConnector = Core.WifiConnector.GetService(); //DependencyService.Get<IWifiConnector>();
 
                         if (wifiConnector == null)
                         {
